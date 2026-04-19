@@ -1,0 +1,40 @@
+{
+  "id": 1,
+  "Country": "India",
+  "state": [
+    {
+      "StateName": "AndhraPradesh",
+      "placeDetails": {
+        "key": "AP",
+        "Cities": [
+          { "place": "Anantapur", "key": "ATP","cityLock":0,"cityCost":30000 },
+          { "place": "Tirupati", "key": "TPY" ,"cityLock":0,"cityCost":30000},
+          { "place": "Guntur", "key": "Gnt" ,"cityLock":0,"cityCost":30000}
+        ],
+        "Distance": [
+          { "from": "ATP", "TO": "TPY", "KM": 780 },
+          { "from": "ATP", "TO": "GNT", "KM": 900 }
+        ]
+      },
+      "Statelock": 0,
+      "StateCost":50000
+    },
+    {
+      "StateName": "Karnataka",
+      "placeDetails": {
+        "key": "KA",
+        "Cities": [
+          { "place": "Bangalore", "key": "BAN","cityLock":1,"cityCost":40000},
+          { "place": "Mysore", "key": "MY","cityLock":1 ,"cityCost":40000},
+          { "place": "Udupi", "key": "UDU","cityLock":1 ,"cityCost":40000}
+        ],
+        "Distance": [
+          { "from": "BAN", "TO": "UDU", "KM": 600 },
+          { "from": "UDU", "TO": "MY", "KM": 400 }
+        ]
+      },
+      "Statelock": 1,
+      "StateCost":50000
+    }
+  ]
+}
