@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "busName": "City Mini-Coach",
+    "BusState": {
+      "capacity": 20,
+      "fuelType": "Diesel",
+      "condition": 100
+    },
+    "price": 5000,
+    "locked": false
+  },
+  {
+    "id": 2,
+    "busName": "Express Star",
+    "BusState": {
+      "capacity": 45,
+      "fuelType": "Diesel",
+      "condition": 100
+    },
+    "price": 15000,
+    "locked": true
+  },
+  {
+    "id": 3,
+    "busName": "Intercity Sleeper",
+    "BusState": {
+      "capacity": 36,
+      "fuelType": "Diesel",
+      "condition": 100
+    },
+    "price": 35000,
+    "locked": true
+  },
+  {
+    "id": 4,
+    "busName": "E-Transit Volt",
+    "BusState": {
+      "capacity": 40,
+      "fuelType": "Electric",
+      "condition": 100
+    },
+    "price": 50000,
+    "locked": true
+  },
+  {
+    "id": 5,
+    "busName": "Luxury Multi-Axle",
+    "BusState": {
+      "capacity": 52,
+      "fuelType": "Diesel",
+      "condition": 100
+    },
+    "price": 80000,
+    "locked": true
+  },
+  {
+    "id": 6,
+    "busName": "City Multi-Coach",
+    "BusState": {
+      "capacity": 30,
+      "fuelType": "Diesel",
+      "condition": 100
+    },
+    "price": 5000,
+    "locked": false
+  }
+]

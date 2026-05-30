@@ -14,7 +14,7 @@ export default function Header({ companyName, userName, money, setMoney,Gameover
 
 
   return (
-    <nav className="flex justify-between items-center p-4 bg-slate-800 text-white h-16 shadow-lg">
+    <nav className="sticky top-0 z-50 flex justify-between items-center p-4 bg-slate-800 text-white h-16 shadow-lg">
       {/* LEFT */}
       <div className="flex items-center gap-4">
         <img src={logo} alt="Logo" className="h-10 w-10" />

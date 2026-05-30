@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Dialog from "./Dialog";
 
-function Routes({ UserData, UserUpdateData ,setMoney }) {
+function Routes({ UserData, UserUpdateData, setMoney ,AssignedRoutes,setAssignedRoutes }) {
   const [masterData, setMasterData] = useState(null); // The whole JSON
   const [activeRoutes, setActiveRoutes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDialogModalOpen, setDialogModalOpen] = useState(false);
   const [buyData, setBuyData] = useState({});
-  const [warningMessage,setWarningMessage]=useState("")
+  const [warningMessage, setWarningMessage] = useState("");
+  const [setassignbus, setAssignBusOpen] = useState(false);
+  const [AssignBusRoute, setAssignBusRouteData] = useState({});
+  const [isAssignBusModalOpen, setAssignBusModalOpen] = useState(false);
+  const [busMasterData, setBusMasterData] = useState([]);
 
   // Form State
   const [selection, setSelection] = useState({
@@ -23,6 +27,11 @@ function Routes({ UserData, UserUpdateData ,setMoney }) {
       .then((data) => setMasterData(data))
       .catch((err) => console.error("Error loading routes:", err));
   }, []);
+
+  useEffect(() => {
+    setBusMasterData(JSON.parse(localStorage.getItem("BusSimulator")).buses);
+    console.log("bus data received", busMasterData);
+  }, [isAssignBusModalOpen]);
 
   const handleAddRoute = () => {
     const routeName = `${selection.fromCity} ➔ ${selection.toCity}`;
@@ -80,10 +89,78 @@ function Routes({ UserData, UserUpdateData ,setMoney }) {
               <p className="text-[10px] text-slate-500 mt-1 uppercase">
                 Distance: {route.distance}
               </p>
+              <button
+                onClick={() => {
+                  setAssignBusOpen(true);
+                  setAssignBusModalOpen(true);
+                  setAssignBusRouteData({
+                    id: route.id,
+                    route: route.name,
+                    Distance: route.distance,
+                  });
+                }}
+                className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded uppercase transition-colors"
+              >
+                AssignBus
+              </button>
             </div>
           ))}
         </div>
       </div>
+      {/* ---- assign bus modal ----- */}
+      {setassignbus && isAssignBusModalOpen && (
+        <Dialog
+          onClose={() => {
+            setAssignBusModalOpen(false);
+          }}
+        >
+          <div className="p-2">
+            {/* Header Section */}
+            <div className="border-b border-slate-700 pb-4 mb-6">
+              <h2 className="text-xl font-black text-blue-400 tracking-tight flex items-center gap-2">
+                <span>📍</span> {AssignBusRoute.route}
+              </h2>
+              <p className="text-slate-400 text-xs font-semibold uppercase mt-1">
+                Distance:{" "}
+                <span className="text-white">{AssignBusRoute.distance}</span>
+              </p>
+            </div>
+
+            {/* Form Section */}
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-widest">
+                  Select Available Bus
+                </label>
+                <select
+                  className="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer appearance-none"
+                  defaultValue=""
+                >
+                  {busMasterData.map((b) => {
+                    if (b !== null) return <option key = {b} value={b}>{b}</option>;
+                  })}
+                </select>
+              </div>
+
+              {/* Action Button */}
+              <button
+                onClick={() => {
+                  // Logic to handle assignment goes here
+                  setAssignBusModalOpen(false);
+                  setActiveRoutes(activeRoutes.filter((v)=>{return v.id !== AssignBusRoute.id}));
+                  UserUpdateData({ ...UserData, Routes: activeRoutes.filter((v)=>{return v.id !== AssignBusRoute.id})});
+                  setAssignedRoutes(...AssignedRoutes,AssignedRoutes.push(AssignBusRoute))
+                }}
+                className="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all flex justify-center items-center gap-2 mt-4"
+              >
+                <span>Confirm Assignment</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+        </Dialog>
+      )}
 
       {/* --- CASCADING FORM MODAL --- */}
       {isModalOpen && masterData && (
@@ -125,30 +202,43 @@ function Routes({ UserData, UserUpdateData ,setMoney }) {
                         className="flex items-center gap-2 mb-2"
                       >
                         <button
-                          onClick={()=>{setSelection({...selection,state:s})}}
-                          disabled={s.Statelock === 1 &&  !UserData.UnlockedState.includes(s.StateName)}
+                          onClick={() => {
+                            setSelection({ ...selection, state: s });
+                          }}
+                          disabled={
+                            s.Statelock === 1 &&
+                            !UserData.UnlockedState.includes(s.StateName)
+                          }
                           className={`flex-grow p-3 rounded text-white border text-left flex justify-between ${
-                            s.Statelock === 1 && !UserData.UnlockedState.includes(s.StateName)
+                            s.Statelock === 1 &&
+                            !UserData.UnlockedState.includes(s.StateName)
                               ? "opacity-50 bg-slate-800"
                               : "bg-slate-900 border-blue-500/30"
                           }${selection.state?.StateName === s.StateName ? "border-blue-500 bg-blue-500/10" : ""}`}
                         >
                           <span>{s.StateName}</span>
-                          {(s.Statelock === 1 &&   !UserData.UnlockedState.includes(s.StateName) )&& <span>🔒</span>}
+                          {s.Statelock === 1 &&
+                            !UserData.UnlockedState.includes(s.StateName) && (
+                              <span>🔒</span>
+                            )}
                         </button>
 
                         {/* SHOW BUY BUTTON ONLY IF LOCKED */}
-                        {(s.Statelock === 1 &&  !UserData.UnlockedState.includes(s.StateName))&& (
-                          <button
-                            onClick={() => {
-                              setDialogModalOpen(true);
-                              setBuyData({"option":s.StateName ,"cost":s.StateCost});
-                            }}
-                            className="bg-green-600 text-white hover:bg-green-500 px-4 py-3 rounded text-xs font-bold transition-all"
-                          >
-                            BUY
-                          </button>
-                        )}
+                        {s.Statelock === 1 &&
+                          !UserData.UnlockedState.includes(s.StateName) && (
+                            <button
+                              onClick={() => {
+                                setDialogModalOpen(true);
+                                setBuyData({
+                                  option: s.StateName,
+                                  cost: s.StateCost,
+                                });
+                              }}
+                              className="bg-green-600 text-white hover:bg-green-500 px-4 py-3 rounded text-xs font-bold transition-all"
+                            >
+                              BUY
+                            </button>
+                          )}
                       </div>
                     ))}
                   </div>
@@ -254,16 +344,26 @@ function Routes({ UserData, UserUpdateData ,setMoney }) {
 
               <div className="flex flex-col gap-2">
                 <button
-                  onClick={()=>{
-                    if(UserData.bankDetails.money >=buyData.cost){
-                     let newMoney = UserData.bankDetails.money-buyData.cost
-                      UserUpdateData({...UserData ,bankDetails:{...UserData.bankDetails,money:UserData.bankDetails.money-buyData.cost},UnlockedState:[...UserData.UnlockedState , buyData.option]})
-                      setMoney(newMoney)
-                      setWarningMessage("Purshased successfully")
-                      setDialogModalOpen(false)
-                      setBuyData({})
-                    }else{
-                      setWarningMessage("No sufficient Funds")
+                  onClick={() => {
+                    if (UserData.bankDetails.money >= buyData.cost) {
+                      let newMoney = UserData.bankDetails.money - buyData.cost;
+                      UserUpdateData({
+                        ...UserData,
+                        bankDetails: {
+                          ...UserData.bankDetails,
+                          money: UserData.bankDetails.money - buyData.cost,
+                        },
+                        UnlockedState: [
+                          ...UserData.UnlockedState,
+                          buyData.option,
+                        ],
+                      });
+                      setMoney(newMoney);
+                      setWarningMessage("Purshased successfully");
+                      setDialogModalOpen(false);
+                      setBuyData({});
+                    } else {
+                      setWarningMessage("No sufficient Funds");
                     }
                   }}
                   className="w-full bg-green-600 p-3 rounded-lg font-bold hover:bg-green-500 transition-all"
@@ -272,8 +372,9 @@ function Routes({ UserData, UserUpdateData ,setMoney }) {
                 </button>
                 <button
                   onClick={() => {
-                    setDialogModalOpen(false)
-                    setBuyData({})}}
+                    setDialogModalOpen(false);
+                    setBuyData({});
+                  }}
                   className="w-full bg-slate-800 p-3 rounded-lg font-bold text-slate-400"
                 >
                   MAYBE LATER
@@ -287,11 +388,15 @@ function Routes({ UserData, UserUpdateData ,setMoney }) {
           </div>
         </Dialog>
       )}
-      { warningMessage !== '' && <Dialog
-      onClose={()=>{setWarningMessage('')}}
-      >
-        <p>{warningMessage}</p>
-      </Dialog> }
+      {warningMessage !== "" && (
+        <Dialog
+          onClose={() => {
+            setWarningMessage("");
+          }}
+        >
+          <p>{warningMessage}</p>
+        </Dialog>
+      )}
     </div>
   );
 }

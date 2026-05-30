@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 let CompanyLogo = [
   "/Images/Logos/logo1.png",
   "/Images/Logos/logo2.png",
@@ -11,12 +11,21 @@ function Registration({ onStart }) {
   const [tempCompany, setTempCompany] = useState("");
   const [tempUser, setTempUser] = useState("");
   const [logo, setLogo] = useState(CompanyLogo[0]);
+  const [buses, setBuses] = useState(null);
+ 
+  useEffect(() => {
+    fetch("/json/Buses.json")
+      .then((res) => res.json())
+      .then((data) => setBuses(data))
+      .catch((err) => console.error("Error loading buses", err));
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (tempCompany && tempUser) {
       // We call the function passed down from App.jsx
-      onStart(tempCompany, tempUser, logo);
+       let tempBus = buses.filter((b)=>{return !b.locked}).map((v)=>{ return v.busName})
+      onStart(tempCompany, tempUser, logo,tempBus);
     }
   };
 
