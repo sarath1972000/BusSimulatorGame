@@ -3,6 +3,7 @@ import Header from "./Components/Header";
 import Registration from "./Components/Registration"; // Import new component
 import Routes from "./Components/Routes";
 import Dialog from "./Components/Dialog";
+import Buses from "./Components/Buses";
 import Scheduler from "./Components/Scheduled"
 function App() {
   const [companyName, setCompanyName] = useState("Bus Sim");
@@ -13,6 +14,7 @@ function App() {
   const [logo, setlogo] = useState("select Logo");
   const [gameState, setGameState] = useState({});
   const [AssignedRoutes , setAssignedRoutes] =useState([])
+  const [AddBusModalOpen, setAddBusModalOpen] = useState(false);
 
   useEffect(() => {
     console.log("setting up game state", gameState);
@@ -77,7 +79,9 @@ function App() {
             <section className="flex-grow flex flex-col gap-4">
               {/* Top Management Buttons */}
               <div className="grid grid-cols-3 gap-4">
-                <button className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-white font-bold uppercase text-xs hover:border-blue-500 transition-all">
+                <button onClick={()=>{
+                  setAddBusModalOpen(true)
+                }} className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-white font-bold uppercase text-xs hover:border-blue-500 transition-all">
                   Add Buses
                 </button>
                 <button className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-white font-bold uppercase text-xs hover:border-orange-500 transition-all">
@@ -91,6 +95,14 @@ function App() {
             </section>
           </>
         )}
+        <Buses
+          open={AddBusModalOpen}
+          onClose={() => setAddBusModalOpen(false)}
+          gameState={gameState}
+          setGameState={setGameState}
+          money={money}
+          setMoney={setMoney}
+        />
         {Gameover && (
           <Dialog
             onClose={() => {
